@@ -1,0 +1,4 @@
+--Day 1 of SQL rebuilding
+--Did SQLBolt lessons 1 through 9
+--Learned about queries, relational databases, SELECT, FROM, *, WHERE, INNER JOIN, LEFT/RIGHT/FULL JOIN, ON, 
+--Expresssions, AS, NULL/NOT NULL, IS NULL/ IS NOT NULL, ORDER BY, LIMIT, OFFSET, BETWEEN ... AND ..., IN(...)/NOT IN(...), LIKE/NOT LIKE, = and <> or =!, % and _ use in string search.
