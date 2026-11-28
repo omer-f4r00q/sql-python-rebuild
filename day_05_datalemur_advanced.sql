@@ -111,3 +111,40 @@ SELECT tweet_bucket, COUNT(user_id) AS users_num FROM (SELECT user_id, COUNT(msg
 WHERE EXTRACT(YEAR FROM tweet_date) = 2022
 GROUP BY user_id) AS total_tweets_by_user
 GROUP BY tweet_bucket;
+
+--WINDOW Functions:
+--Syntax:
+AGGREGATE FUCNTION(column_name) OVER (
+     PARTITION BY column_name
+     ORDER BY column_name) AS alias
+
+/* COUNT() counts the number of rows in a specified column across a defined window.
+SUM() computes the sum of values within a specified column across a defined window.
+AVG() calculates the average of a selected group of values across a defined window.
+MIN() retrieves the lowest value from a particular column across a defined window.
+MAX() fetches the highest value from a specific column across a defined window.
+FIRST_VALUE() returns the first value in a designated column across a defined window.
+LAST_VALUE() provides the last value in a given column across a defined window.*/
+
+/* Task (Medium):JP Morgan: Write a query that outputs the name of the credit card, and how many cards were issued in its launch month.
+ The launch month is the earliest record in the monthly_cards_issued table for a given card. Order the results starting from the biggest issued amount.*/
+--Solution1 (Using CTE):
+WITH full_dates_table AS(
+SELECT card_name, issued_amount, MAKE_DATE(issue_year, issue_month, 01) AS issue_date,
+MIN(MAKE_DATE(issue_year, issue_month, 01)) OVER (PARTITION BY card_name) AS first_date
+FROM monthly_cards_issued
+)
+
+SELECT card_name, issued_amount FROM full_dates_table
+WHERE issue_date = first_date
+ORDER BY issued_amount DESC;
+--Solution2 (Using subquery):
+SELECT card_name, issued_amount FROM (SELECT card_name, issued_amount, MAKE_DATE(issue_year, issue_month, 01) AS issue_date,
+MIN(MAKE_DATE(issue_year, issue_month, 01)) OVER (PARTITION BY card_name) AS first_date FROM monthly_cards_issued) AS full_dates_table
+WHERE issue_date = first_date
+ORDER BY issued_amount DESC;
+--Solution3 (did it on my own so it's a bit sloppy):
+SELECT card_name, issued_amount FROM (SELECT *, FIRST_VALUE(combined_issue_date) OVER (PARTITION BY card_name ORDER BY combined_issue_date) AS combined_first_date FROM
+(SELECT *, MAKE_DATE(issue_year, issue_month, 01) AS combined_issue_date FROM monthly_cards_issued) AS complete_table) AS final_output
+WHERE combined_issue_date = combined_first_date
+ORDER BY issued_amount DESC;
